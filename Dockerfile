@@ -10,6 +10,9 @@ COPY gradlew /app/
 # Download dependencies first - this layer will be cached
 RUN gradle dependencies --no-daemon
 
+COPY ./JmxInvoke.java .
+RUN javac JmxInvoke.java
+
 # Copy the source code
 COPY src /app/src
 
@@ -39,11 +42,17 @@ USER spring:spring
 # Set environment variables
 ENV SPRING_PROFILES_ACTIVE=production
 
+COPY ./entrypoint.sh .
+
+# Copy the compiled JmxInvoke.class from the build stage
+COPY --from=build /app/JmxInvoke.class .
+
 # Expose port
 EXPOSE 8080
+EXPOSE 9010
 
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # Run the application
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:+UseG1GC", "-XX:+HeapDumpOnOutOfMemoryError", "-XX:HeapDumpPath=/app/logs/heapdump.hprof", "-jar", "app.jar"]
+CMD ["sh", "entrypoint.sh"]
