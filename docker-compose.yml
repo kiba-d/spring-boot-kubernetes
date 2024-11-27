@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  spring-boot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: spring-boot-kubernetes:0.0.1
+    container_name: spring-boot-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/logs
+      - ./config:/app/config
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - LOGBACK_CONFIG_PATH=/app/config
+      - LOG_PATH=/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    # Limiting resources to prevent container from consuming too much memory
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+volumes:
+  config:
+    driver: local
