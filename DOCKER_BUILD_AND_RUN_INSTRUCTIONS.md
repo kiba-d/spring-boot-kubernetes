@@ -53,6 +53,9 @@ docker compose down --rmi all -v
 # Build the image
 docker build -t spring-boot-kubernetes:0.0.1 .
 
+# Build the image with verbose output
+docker build --no-cache --progress=plain -t spring-boot-kubernetes:0.0.1 .
+
 # Run the container
 docker run \
   --name spring-boot-app \
