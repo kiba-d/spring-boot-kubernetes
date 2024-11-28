@@ -15,7 +15,6 @@ java \
   -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT \
   -Dcom.sun.management.jmxremote.host=$HOST \
   -Djava.rmi.server.hostname=$HOST \
-  -Xmx512m \
-  -Xms256m \
-  -XX:+UseG1GC \
+  -XX:MaxRAMPercentage=75.0 \
+  -XX:InitialRAMPercentage=50.0 \
   -jar app.jar
